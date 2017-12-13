@@ -22,20 +22,27 @@ function myEval(toEvaluate) {
 	}
 	console.log('after parsing', operation);
 
-	let res = operation[0];
+	let res = {
+		value: Number(operation[0]),
+		pow: 0,
+	};
 	if (operation.length > 1) {
 		var j = 0;
 		operation.forEach(entitie => {
 			if (entitie === '*') {
-				res = res * operation[j + 1];
+				if (operation[j + 1].charAt(0) !== 'X') {
+					res.value = res.value * Number(operation[j + 1]);
+				} else {
+					res.pow = res.pow + Number(operation[j + 1].slice(2));
+				}
 			} else if (entitie === '/') {
-				res = res / operation[j + 1];
+				res.value = Number(res.value / operation[j + 1]);
 			}
 			j++;
 		});
 	}
-	// console.log('after calculs', res);
-	return Number(Number(res).toFixed(2));
+	console.log('after calculs', res);
+	return res;
 }
 
 function parseMyPolynom(polynom) {
@@ -114,10 +121,7 @@ function getReducedForm(left, right) {
 		tableOfObject.push(myEval(num));
 	});
 	right.forEach(num => {
-		tableOfObject.push({
-			value: myEval(num.slice(0, num.length - 4)) * -1,
-			pow: num.charAt(num.length - 1),
-		})
+		tableOfObject.push(myEval(num + ' *-1'));
 	});
 	console.log(tableOfObject);
 }
