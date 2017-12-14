@@ -160,7 +160,7 @@ function getReducedForm(left, right) {
 			}
 		})
 		reducedArray.push({
-			value: res,
+			value: res.toFixed(2),
 			pow: pow
 		})
 	});
