@@ -20,7 +20,7 @@ function myEval(toEvaluate) {
 	} else {
 		operation.push(toEvaluate);
 	}
-	console.log('after parsing', operation);
+	// console.log('after parsing', operation);
 
 	let res = {
 		value: Number(operation[0]),
@@ -41,7 +41,7 @@ function myEval(toEvaluate) {
 			j++;
 		});
 	}
-	console.log('after calculs', res);
+	// console.log('after calculs', res);
 	return res;
 }
 
@@ -73,36 +73,36 @@ function parseMyPolynom(polynom) {
 	rightEntities.push(right.slice(startRightSlice, right.length));
 }
 
-function cutThePoly(left, right) {
-	let tmpA = 0;
-	let tmpB = 0;
-	let tmpC = 0;
+// function cutThePoly(left, right) {
+// 	let tmpA = 0;
+// 	let tmpB = 0;
+// 	let tmpC = 0;
 
-	console.log(left);
-	left.forEach(num => {
-		if(num.slice(num.length - 3) === 'X^2') {
-			tmpA = tmpA + myEval(num.slice(0, num.length - 4));
-		} else if(num.slice(num.length - 3) === 'X^1') {
-			tmpB = tmpB + myEval(num.slice(0, num.length - 4));
-		} else if(num.slice(num.length - 3) === 'X^0') {
-			tmpC = tmpC + myEval(num.slice(0, num.length - 4));
-		}
-	});
+// 	console.log(left);
+// 	left.forEach(num => {
+// 		if(num.slice(num.length - 3) === 'X^2') {
+// 			tmpA = tmpA + myEval(num.slice(0, num.length - 4));
+// 		} else if(num.slice(num.length - 3) === 'X^1') {
+// 			tmpB = tmpB + myEval(num.slice(0, num.length - 4));
+// 		} else if(num.slice(num.length - 3) === 'X^0') {
+// 			tmpC = tmpC + myEval(num.slice(0, num.length - 4));
+// 		}
+// 	});
 
-	console.log(right);
-	right.forEach(num => {
-		if(num.slice(num.length - 3) === 'X^2') {
-			tmpA = tmpA - myEval(num.slice(0, num.length - 4));
-		} else if(num.slice(num.length - 3) === 'X^1') {
-			tmpB = tmpB - myEval(num.slice(0, num.length - 4));
-		} else if(num.slice(num.length - 3) === 'X^0') {
-			tmpC = tmpC - myEval(num.slice(0, num.length - 4));
-		}
-	});
-	a = tmpA;
-	b = tmpB;
-	c = tmpC;
-}
+// 	console.log(right);
+// 	right.forEach(num => {
+// 		if(num.slice(num.length - 3) === 'X^2') {
+// 			tmpA = tmpA - myEval(num.slice(0, num.length - 4));
+// 		} else if(num.slice(num.length - 3) === 'X^1') {
+// 			tmpB = tmpB - myEval(num.slice(0, num.length - 4));
+// 		} else if(num.slice(num.length - 3) === 'X^0') {
+// 			tmpC = tmpC - myEval(num.slice(0, num.length - 4));
+// 		}
+// 	});
+// 	a = tmpA;
+// 	b = tmpB;
+// 	c = tmpC;
+// }
 
 function getPolynomialDegree(polynom) {
 	for(var i = 0; i < polynom.length; i++) {
@@ -114,8 +114,34 @@ function getPolynomialDegree(polynom) {
 	}
 }
 
+function cleanReduced(array) {
+	let i = 0;
+	array.forEach(obj => {
+		if (obj.value === 0) {
+			array.splice(i, 1);
+		}
+		i++;
+ 	});
+ 	return array;
+}
+
+function countPow(array) {
+	const pows = [];
+	array.forEach(obj => {
+		if (pows.indexOf(obj.pow) === -1) {
+			pows.push(obj.pow);
+		}
+	});
+	return pows;
+}
+
+function compareNumbers(a, b) {
+  return a - b;
+}
+
 function getReducedForm(left, right) {
-	const tableOfObject = [];
+	let tableOfObject = [];
+	let reducedArray = [];
 
 	left.forEach(num => {
 		tableOfObject.push(myEval(num));
@@ -123,7 +149,53 @@ function getReducedForm(left, right) {
 	right.forEach(num => {
 		tableOfObject.push(myEval(num + ' *-1'));
 	});
-	console.log(tableOfObject);
+	const howMuchPow = countPow(tableOfObject);
+	howMuchPow.sort(compareNumbers);
+	// console.log('how much pows', howMuchPow);
+	howMuchPow.forEach(pow => {
+		let res = 0;
+		tableOfObject.forEach(obj => {
+			if (obj.pow === pow) {
+				res = res + obj.value;
+			}
+		})
+		reducedArray.push({
+			value: res,
+			pow: pow
+		})
+	});
+	reducedArray = cleanReduced(reducedArray);
+	// console.log('reducedArray', reducedArray);
+	return reducedArray;
+}
+
+function printReducedForm(array) {
+	let reducedString = '';
+	let i = 0;
+	array.forEach(obj => {
+		reducedString += `${obj.value} * X^${obj.pow}`;
+		if (i !== array.length - 1) {
+			 reducedString += ' + ';
+		}
+		i++;
+	});
+	if (array.length === 0) {
+		console.log('Reduced Form : 0 * X^0 = 0')
+		console.log('Polynomial Degree : 0')
+	} else {
+		console.log('Reduced Form :', reducedString)
+		console.log('Polynomial Degree :', array[array.length - 1].pow)
+	}
+}
+
+function getValue(array, nb) {
+	let res = 0;
+	array.forEach(obj => {
+		if (obj.pow === nb) {
+			res = obj.value;
+		}
+	})
+	return res;
 }
 
 if (myArgs.length != 1) {
@@ -133,36 +205,46 @@ if (myArgs.length != 1) {
 var polynom = myArgs[0];
 const leftEntities = [];
 const rightEntities = [];
-let a = 0;
-let b = 0;
-let c = 0;
-let polynomialDegree = 0;
 parseMyPolynom(polynom);
-getReducedForm(leftEntities, rightEntities);
-// getPolynomialDegree(polynom);
-// cutThePoly(leftEntities, rightEntities);
-// console.log(a, b, c);
-// const delta = b * b - 4 * a * c;
-// console.log('delta', delta)
-// if (a === 0) {
-// 	if (b === 0) {
-// 		if (c === 0) {
-// 			console.log('Tous les réels sont solutions')
-// 		} else {
-// 			console.log('Pas de solutions')
-// 		}
-// 	} else {
-// 		console.log('Le resultat est : x = ', -c/b);
-// 	}
-// } else {
-// 	if (delta === 0) {
-// 		let res = -b / (2 * a);
-// 		console.log('Le resultat est : x = ', res)
-// 	} else if (delta > 0) {
-// 		let res1 = ( (-b + Math.sqrt(delta)) / (2 * a) );
-// 		let res2 = ( (-b - Math.sqrt(delta)) / (2 * a) );
-// 		console.log(`Les resultats sont : x1 = ${res1} et x2 = ${res2}`);
-// 	} else if (delta < 0) {
-// 		console.log('Il y a deux resultats imaginaires je vais le faire soonTM')
-// 	}
-// }
+const reducedForm = getReducedForm(leftEntities, rightEntities);
+printReducedForm(reducedForm);
+if (reducedForm.length === 0) {
+	console.log('Every real is a solution')
+} else {
+	if (reducedForm[reducedForm.length - 1].pow > 2) {
+		console.log('The polynomial degree is stricly greater than 2, I can t solve.')
+		return;
+	}
+	let a = getValue(reducedForm, 2);
+	let b = getValue(reducedForm, 1);
+	let c = getValue(reducedForm, 0);
+	// console.log(a, b, c);
+
+	const delta = b * b - 4 * a * c;
+	// console.log('delta', delta)
+	if (a === 0) {
+		if (b === 0) {
+			if (c === 0) {
+				console.log('Every real is a solution');
+			} else {
+				console.log('No solutions');
+			}
+		} else {
+			console.log('The solution is : x =', -c/b);
+		}
+	} else {
+		if (delta === 0) {
+			let res = -b / (2 * a);
+			console.log('The solution is x =', res);
+		} else if (delta > 0) {
+			let res1 = ( (-b + Math.sqrt(delta)) / (2 * a) );
+			let res2 = ( (-b - Math.sqrt(delta)) / (2 * a) );
+			console.log('Discriminant is strictly positive, the two solutions are:');
+			console.log(`x1 = ${res1} and x2 = ${res2}`);
+		} else if (delta < 0) {
+			console.log('Discriminant is strictly negative, the two solutions are:');
+			console.log(`x1 = (-${b} + i√${delta * -1}) / ${2 * a}`)
+			console.log(`x2 = (-${b} - i√${delta * -1}) / ${2 * a}`)
+		}
+	}
+}
