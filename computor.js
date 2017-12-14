@@ -115,13 +115,11 @@ function getPolynomialDegree(polynom) {
 }
 
 function cleanReduced(array) {
-	let i = 0;
-	array.forEach(obj => {
-		if (obj.value === 0) {
-			array.splice(i, 1);
+	for(var i = array.length - 1; i >= 0; i--) {
+		if (array[i].value === 0) {
+			array.splice(array[i], 1);
 		}
-		i++;
- 	});
+ 	};
  	return array;
 }
 
@@ -160,12 +158,13 @@ function getReducedForm(left, right) {
 			}
 		})
 		reducedArray.push({
-			value: res.toFixed(2),
+			value: res,
 			pow: pow
 		})
 	});
+	// console.log('before clean', reducedArray)
 	reducedArray = cleanReduced(reducedArray);
-	// console.log('reducedArray', reducedArray);
+	// console.log('after clean', reducedArray);
 	return reducedArray;
 }
 
@@ -183,7 +182,7 @@ function printReducedForm(array) {
 		console.log('Reduced Form : 0 * X^0 = 0')
 		console.log('Polynomial Degree : 0')
 	} else {
-		console.log('Reduced Form :', reducedString)
+		console.log('Reduced Form :', reducedString, '= 0')
 		console.log('Polynomial Degree :', array[array.length - 1].pow)
 	}
 }
@@ -235,7 +234,8 @@ if (reducedForm.length === 0) {
 	} else {
 		if (delta === 0) {
 			let res = -b / (2 * a);
-			console.log('The solution is x =', res);
+			console.log('Discriminant is 0, the solutions is:');
+			console.log('x =', res);
 		} else if (delta > 0) {
 			let res1 = ( (-b + Math.sqrt(delta)) / (2 * a) );
 			let res2 = ( (-b - Math.sqrt(delta)) / (2 * a) );
@@ -244,7 +244,7 @@ if (reducedForm.length === 0) {
 		} else if (delta < 0) {
 			console.log('Discriminant is strictly negative, the two solutions are:');
 			console.log(`x1 = (-${b} + i√${delta * -1}) / ${2 * a}`)
-			console.log(`x2 = (-${b} - i√${delta * -1}) / ${2 * a}`)
+			console.log(`x2 = (-${b} - i√${delta * -1}i) / ${2 * a}`)
 		}
 	}
 }
