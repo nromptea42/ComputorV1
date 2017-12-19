@@ -243,8 +243,8 @@ if (reducedForm.length === 0) {
 			console.log(`x1 = ${res1} and x2 = ${res2}`);
 		} else if (delta < 0) {
 			console.log('Discriminant is strictly negative, the two solutions are:');
-			console.log(`x1 = (-${b} + i√${delta * -1}) / ${2 * a}`)
-			console.log(`x2 = (-${b} - i√${delta * -1}i) / ${2 * a}`)
+			console.log(`x1 = (${b * -1} + i√${delta * -1}) / ${2 * a}`);
+			console.log(`x2 = (${b * -1} - i√${delta * -1}i) / ${2 * a}`);
 		}
 	}
 }
